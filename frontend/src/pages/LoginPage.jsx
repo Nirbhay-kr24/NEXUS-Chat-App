@@ -36,6 +36,41 @@ const LoginPage = () => {
             </div>
           </div>
 
+          {/* Small animated illustration on the left side to make login livelier */}
+          <div className="flex items-center justify-center mb-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 80 80"
+              className="h-20 w-20"
+              role="img"
+              aria-label="Chat animation"
+            >
+              <defs>
+                <linearGradient id="lg1" x1="0" x2="1">
+                  <stop offset="0%" stopColor="#60a5fa" />
+                  <stop offset="100%" stopColor="#3b82f6" />
+                </linearGradient>
+              </defs>
+
+              {/* rounded square background */}
+              <rect x="0" y="0" width="80" height="80" rx="14" fill="#f1f5f9" />
+
+              {/* chat bubble */}
+              <g transform="translate(10,12)">
+                <path d="M0 6a6 6 0 0 1 6-6h40a6 6 0 0 1 6 6v22a6 6 0 0 1-6 6H34l-8 6v-6H6a6 6 0 0 1-6-6z" fill="url(#lg1)" />
+                <circle cx="18" cy="16" r="3" fill="#fff">
+                  <animate attributeName="opacity" values="0.2;1;0.2" dur="1s" repeatCount="indefinite" begin="0s" />
+                </circle>
+                <circle cx="28" cy="16" r="3" fill="#fff">
+                  <animate attributeName="opacity" values="0.2;1;0.2" dur="1s" repeatCount="indefinite" begin="0.15s" />
+                </circle>
+                <circle cx="38" cy="16" r="3" fill="#fff">
+                  <animate attributeName="opacity" values="0.2;1;0.2" dur="1s" repeatCount="indefinite" begin="0.3s" />
+                </circle>
+              </g>
+            </svg>
+          </div>
+
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="form-control">

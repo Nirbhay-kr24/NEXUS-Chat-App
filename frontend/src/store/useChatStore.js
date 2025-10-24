@@ -93,8 +93,18 @@ export const useChatStore = create((set, get) => ({
           image: messageData.image,
           createdAt: new Date().toISOString(),
         };
-        
-        const updatedMessages = [...messages, userMessage];
+
+        // Add a Gemini placeholder so the UI shows "Thinking..." while we wait
+        const placeholderId = `gemini-temp-${Date.now()}`;
+        const geminiPlaceholder = {
+          _id: placeholderId,
+          senderId: "gemini-ai",
+          text: "Thinking...",
+          createdAt: new Date().toISOString(),
+          isPlaceholder: true,
+        };
+
+        const updatedMessages = [...messages, userMessage, geminiPlaceholder];
         set({ messages: updatedMessages });
         saveGeminiMessages(updatedMessages); // ✅ Save to localStorage
 
@@ -105,27 +115,32 @@ export const useChatStore = create((set, get) => ({
             chatId: selectedUser._id,
           });
 
-          // Add Gemini's reply
+          // Replace the placeholder with Gemini's real reply
           const geminiMessage = {
             _id: (Date.now() + 1).toString(),
             senderId: "gemini-ai",
             text: res.data.text,
             createdAt: new Date().toISOString(),
           };
-          
-          const finalMessages = [...get().messages, geminiMessage];
+
+          const finalMessages = get().messages.map((m) =>
+            m._id === placeholderId ? geminiMessage : m
+          );
           set({ messages: finalMessages });
           saveGeminiMessages(finalMessages); // ✅ Save to localStorage
         } catch (error) {
           toast.error("Failed to get Gemini response");
+
           const errorMessage = {
             _id: (Date.now() + 1).toString(),
             senderId: "gemini-ai",
             text: "Sorry, I couldn't process that request.",
             createdAt: new Date().toISOString(),
           };
-          
-          const errorMessages = [...get().messages, errorMessage];
+
+          const errorMessages = get().messages.map((m) =>
+            m._id === placeholderId ? errorMessage : m
+          );
           set({ messages: errorMessages });
           saveGeminiMessages(errorMessages); // ✅ Save to localStorage
         }

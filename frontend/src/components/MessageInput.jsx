@@ -1,10 +1,17 @@
 import { useRef, useState } from "react";
+import Picker from '@emoji-mart/react';
+import data from '@emoji-mart/data';
 import { useChatStore } from "../store/useChatStore";
 import { Image, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 const MessageInput = () => {
   const [text, setText] = useState("");
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const handleEmojiSelect = (emoji) => {
+    setText((prev) => prev + emoji.native);
+    setShowEmojiPicker(false);
+  };
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
   const { sendMessage } = useChatStore();
@@ -32,18 +39,25 @@ const MessageInput = () => {
     e.preventDefault();
     if (!text.trim() && !imagePreview) return;
 
+    // capture current values so we can send them after clearing (optimistic UI)
+    const messageText = text.trim();
+    const messageImage = imagePreview;
+
+    // Clear form immediately so the input is emptied for the user
+    setText("");
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
     try {
       await sendMessage({
-        text: text.trim(),
-        image: imagePreview,
+        text: messageText,
+        image: messageImage,
       });
-
-      // Clear form
-      setText("");
-      setImagePreview(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error) {
       console.error("Failed to send message:", error);
+      // restore input on error so user doesn't lose what they typed
+      setText(messageText);
+      setImagePreview(messageImage);
     }
   };
 
@@ -70,6 +84,22 @@ const MessageInput = () => {
       )}
 
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+        {/* Emoji Picker Button */}
+        <div className="relative flex items-center">
+          <button
+            type="button"
+            className="btn btn-circle btn-sm mr-2"
+            onClick={() => setShowEmojiPicker((v) => !v)}
+            aria-label="Pick emoji"
+          >
+            <span role="img" aria-label="emoji">😊</span>
+          </button>
+          {showEmojiPicker && (
+            <div className="absolute left-0 bottom-16 z-50">
+              <Picker data={data} onEmojiSelect={handleEmojiSelect} theme="light" />
+            </div>
+          )}
+        </div>
         <div className="flex-1 flex gap-2">
           <input
             type="text"
@@ -85,7 +115,6 @@ const MessageInput = () => {
             ref={fileInputRef}
             onChange={handleImageChange}
           />
-
           <button
             type="button"
             className={`hidden sm:flex btn btn-circle

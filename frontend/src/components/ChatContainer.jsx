@@ -77,7 +77,7 @@ const ChatContainer = () => {
                   {formatMessageTime(message.createdAt)}
                 </time>
               </div>
-              <div className={`chat-bubble flex flex-col ${isGeminiMessage ? "bg-blue-500 text-white" : ""}`}>
+              <div className={`chat-bubble flex flex-col ${isGeminiMessage ? "bg-blue-500 text-white" : ""} ${message.isPlaceholder ? "opacity-95 italic" : ""}`}>
                 {message.image && (
                   <img
                     src={message.image}
@@ -87,30 +87,38 @@ const ChatContainer = () => {
                 )}
                 {message.text && (
                   isGeminiMessage ? (
-                    <div className="prose prose-sm max-w-none prose-invert">
-                      <ReactMarkdown
-                        components={{
-                          p: ({node, ...props}) => <p className="mb-2 leading-relaxed" {...props} />,
-                          ul: ({node, ...props}) => <ul className="list-disc ml-4 mb-2 space-y-1" {...props} />,
-                          ol: ({node, ...props}) => <ol className="list-decimal ml-4 mb-2 space-y-1" {...props} />,
-                          li: ({node, ...props}) => <li className="leading-relaxed" {...props} />,
-                          strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
-                          em: ({node, ...props}) => <em className="italic" {...props} />,
-                          h1: ({node, ...props}) => <h1 className="text-xl font-bold mb-2 mt-3" {...props} />,
-                          h2: ({node, ...props}) => <h2 className="text-lg font-bold mb-2 mt-3" {...props} />,
-                          h3: ({node, ...props}) => <h3 className="text-base font-bold mb-2 mt-2" {...props} />,
-                          code: ({node, inline, ...props}) => 
-                            inline ? (
-                              <code className="bg-blue-700 bg-opacity-50 px-1.5 py-0.5 rounded text-sm" {...props} />
-                            ) : (
-                              <code className="block bg-blue-700 bg-opacity-50 p-3 rounded my-2 overflow-x-auto" {...props} />
-                            ),
-                          blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-300 pl-3 italic my-2" {...props} />,
-                        }}
-                      >
-                        {message.text}
-                      </ReactMarkdown>
-                    </div>
+                    message.isPlaceholder ? (
+                      // Render a subtle spinner + italic "Thinking..." for placeholders
+                      <div className="flex items-center gap-2 text-white/90">
+                        <span className="w-2.5 h-2.5 rounded-full bg-white animate-pulse inline-block" />
+                        <span className="italic">Thinking...</span>
+                      </div>
+                    ) : (
+                      <div className="prose prose-sm max-w-none prose-invert">
+                        <ReactMarkdown
+                          components={{
+                            p: ({node, ...props}) => <p className="mb-2 leading-relaxed" {...props} />,
+                            ul: ({node, ...props}) => <ul className="list-disc ml-4 mb-2 space-y-1" {...props} />,
+                            ol: ({node, ...props}) => <ol className="list-decimal ml-4 mb-2 space-y-1" {...props} />,
+                            li: ({node, ...props}) => <li className="leading-relaxed" {...props} />,
+                            strong: ({node, ...props}) => <strong className="font-bold" {...props} />,
+                            em: ({node, ...props}) => <em className="italic" {...props} />,
+                            h1: ({node, ...props}) => <h1 className="text-xl font-bold mb-2 mt-3" {...props} />,
+                            h2: ({node, ...props}) => <h2 className="text-lg font-bold mb-2 mt-3" {...props} />,
+                            h3: ({node, ...props}) => <h3 className="text-base font-bold mb-2 mt-2" {...props} />,
+                            code: ({node, inline, ...props}) => 
+                              inline ? (
+                                <code className="bg-blue-700 bg-opacity-50 px-1.5 py-0.5 rounded text-sm" {...props} />
+                              ) : (
+                                <code className="block bg-blue-700 bg-opacity-50 p-3 rounded my-2 overflow-x-auto" {...props} />
+                              ),
+                            blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-blue-300 pl-3 italic my-2" {...props} />,
+                          }}
+                        >
+                          {message.text}
+                        </ReactMarkdown>
+                      </div>
+                    )
                   ) : (
                     <p>{message.text}</p>
                   )
