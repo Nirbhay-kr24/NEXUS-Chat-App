@@ -15,7 +15,7 @@ dotenv.config();
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
-// === MIDDLEWARES ===
+// MIDDLEWARES 
 app.use(express.json()); // parse JSON body
 app.use(cookieParser()); // parse cookies
 app.use(
@@ -25,12 +25,12 @@ app.use(
   })
 );
 
-// === ROUTES ===
+// ROUTES 
 app.use("/api/gemini", geminiRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/messages", messageRoutes);
 
-// === PRODUCTION STATIC FILES ===
+// PRODUCTION STATIC FILES 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
@@ -39,7 +39,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// === START SERVER ===
+// START SERVER 
 server.listen(PORT, () => {
   console.log("Server is running on PORT:", PORT);
   connectDB();
