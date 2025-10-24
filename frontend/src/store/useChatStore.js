@@ -110,7 +110,8 @@ export const useChatStore = create((set, get) => ({
 
         // Call Gemini API
         try {
-          const res = await axios.post("http://localhost:5001/api/gemini", {
+          // Use axiosInstance so production uses relative "/api" (axiosInstance baseURL handles env)
+          const res = await axiosInstance.post("/gemini", {
             message: messageData.text,
             chatId: selectedUser._id,
           });

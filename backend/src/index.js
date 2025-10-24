@@ -15,12 +15,15 @@ dotenv.config();
 const PORT = process.env.PORT || 5001;
 const __dirname = path.resolve();
 
+// Allow specifying the frontend URL via env (set this on Render to your frontend URL)
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+
 // MIDDLEWARES 
 app.use(express.json()); // parse JSON body
 app.use(cookieParser()); // parse cookies
 app.use(
   cors({
-    origin: "http://localhost:5173", // frontend URL
+    origin: FRONTEND_URL, // frontend URL (read from FRONTEND_URL env var)
     credentials: true, // allow cookies/auth
   })
 );
